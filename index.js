@@ -1,218 +1,290 @@
-const professionalList = document.querySelector("#professional-list");
-const jobList = document.querySelector("#job-list");
-const dialogs = [...document.querySelectorAll(".form-dialog")];
-let csrfToken;
+/*!
+ * http-errors
+ * Copyright(c) 2014 Jonathan Ong
+ * Copyright(c) 2016 Douglas Christopher Wilson
+ * MIT Licensed
+ */
 
-async function requestJson(path, options = {}) {
-    let response;
-    try {
-        response = await fetch(path, {
-            credentials: "same-origin",
-            ...options,
-            headers: {
-                ...(options.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
-                ...(options.headers || {})
-            }
-        });
-    } catch {
-        throw new Error("Cannot connect to the app server. Keep “npm start” running and refresh the page.");
+'use strict'
+
+/**
+ * Module dependencies.
+ * @private
+ */
+
+var deprecate = require('depd')('http-errors')
+var setPrototypeOf = require('setprototypeof')
+var statuses = require('statuses')
+var inherits = require('inherits')
+var toIdentifier = require('toidentifier')
+
+/**
+ * Module exports.
+ * @public
+ */
+
+module.exports = createError
+module.exports.HttpError = createHttpErrorConstructor()
+module.exports.isHttpError = createIsHttpErrorFunction(module.exports.HttpError)
+
+// Populate exports for all constructors
+populateConstructorExports(module.exports, statuses.codes, module.exports.HttpError)
+
+/**
+ * Get the code class of a status code.
+ * @private
+ */
+
+function codeClass (status) {
+  return Number(String(status).charAt(0) + '00')
+}
+
+/**
+ * Create a new HTTP Error.
+ *
+ * @returns {Error}
+ * @public
+ */
+
+function createError () {
+  // so much arity going on ~_~
+  var err
+  var msg
+  var status = 500
+  var props = {}
+  for (var i = 0; i < arguments.length; i++) {
+    var arg = arguments[i]
+    var type = typeof arg
+    if (type === 'object' && arg instanceof Error) {
+      err = arg
+      status = err.status || err.statusCode || status
+    } else if (type === 'number' && i === 0) {
+      status = arg
+    } else if (type === 'string') {
+      msg = arg
+    } else if (type === 'object') {
+      props = arg
+    } else {
+      throw new TypeError('argument #' + (i + 1) + ' unsupported type ' + type)
+    }
+  }
+
+  if (typeof status === 'number' && (status < 400 || status >= 600)) {
+    deprecate('non-error status code; use only 4xx or 5xx status codes')
+  }
+
+  if (typeof status !== 'number' ||
+    (!statuses.message[status] && (status < 400 || status >= 600))) {
+    status = 500
+  }
+
+  // constructor
+  var HttpError = createError[status] || createError[codeClass(status)]
+
+  if (!err) {
+    // create error
+    err = HttpError
+      ? new HttpError(msg)
+      : new Error(msg || statuses.message[status])
+    Error.captureStackTrace(err, createError)
+  }
+
+  if (!HttpError || !(err instanceof HttpError) || err.status !== status) {
+    // add properties to generic error
+    err.expose = status < 500
+    err.status = err.statusCode = status
+  }
+
+  for (var key in props) {
+    if (key !== 'status' && key !== 'statusCode') {
+      err[key] = props[key]
+    }
+  }
+
+  return err
+}
+
+/**
+ * Create HTTP error abstract base class.
+ * @private
+ */
+
+function createHttpErrorConstructor () {
+  function HttpError () {
+    throw new TypeError('cannot construct abstract class')
+  }
+
+  inherits(HttpError, Error)
+
+  return HttpError
+}
+
+/**
+ * Create a constructor for a client error.
+ * @private
+ */
+
+function createClientErrorConstructor (HttpError, name, code) {
+  var className = toClassName(name)
+
+  function ClientError (message) {
+    // create the error object
+    var msg = message != null ? message : statuses.message[code]
+    var err = new Error(msg)
+
+    // capture a stack trace to the construction point
+    Error.captureStackTrace(err, ClientError)
+
+    // adjust the [[Prototype]]
+    setPrototypeOf(err, ClientError.prototype)
+
+    // redefine the error message
+    Object.defineProperty(err, 'message', {
+      enumerable: true,
+      configurable: true,
+      value: msg,
+      writable: true
+    })
+
+    // redefine the error name
+    Object.defineProperty(err, 'name', {
+      enumerable: false,
+      configurable: true,
+      value: className,
+      writable: true
+    })
+
+    return err
+  }
+
+  inherits(ClientError, HttpError)
+  nameFunc(ClientError, className)
+
+  ClientError.prototype.status = code
+  ClientError.prototype.statusCode = code
+  ClientError.prototype.expose = true
+
+  return ClientError
+}
+
+/**
+ * Create function to test is a value is a HttpError.
+ * @private
+ */
+
+function createIsHttpErrorFunction (HttpError) {
+  return function isHttpError (val) {
+    if (!val || typeof val !== 'object') {
+      return false
     }
 
-    const contentType = response.headers.get("content-type") || "";
-    if (!contentType.includes("application/json")) {
-        if (!response.ok) {
-            throw new Error(`The server returned HTTP ${response.status}. Refresh the page and check that you opened it from http://localhost:3000.`);
-        }
-        throw new Error("The server returned an unexpected response. Refresh the page and try again.");
+    if (val instanceof HttpError) {
+      return true
     }
 
-    const result = await response.json();
-    if (!response.ok) {
-        throw new Error(result.error || "The request could not be completed. Please try again.");
+    return val instanceof Error &&
+      typeof val.expose === 'boolean' &&
+      typeof val.statusCode === 'number' && val.status === val.statusCode
+  }
+}
+
+/**
+ * Create a constructor for a server error.
+ * @private
+ */
+
+function createServerErrorConstructor (HttpError, name, code) {
+  var className = toClassName(name)
+
+  function ServerError (message) {
+    // create the error object
+    var msg = message != null ? message : statuses.message[code]
+    var err = new Error(msg)
+
+    // capture a stack trace to the construction point
+    Error.captureStackTrace(err, ServerError)
+
+    // adjust the [[Prototype]]
+    setPrototypeOf(err, ServerError.prototype)
+
+    // redefine the error message
+    Object.defineProperty(err, 'message', {
+      enumerable: true,
+      configurable: true,
+      value: msg,
+      writable: true
+    })
+
+    // redefine the error name
+    Object.defineProperty(err, 'name', {
+      enumerable: false,
+      configurable: true,
+      value: className,
+      writable: true
+    })
+
+    return err
+  }
+
+  inherits(ServerError, HttpError)
+  nameFunc(ServerError, className)
+
+  ServerError.prototype.status = code
+  ServerError.prototype.statusCode = code
+  ServerError.prototype.expose = false
+
+  return ServerError
+}
+
+/**
+ * Set the name of a function, if possible.
+ * @private
+ */
+
+function nameFunc (func, name) {
+  var desc = Object.getOwnPropertyDescriptor(func, 'name')
+
+  if (desc && desc.configurable) {
+    desc.value = name
+    Object.defineProperty(func, 'name', desc)
+  }
+}
+
+/**
+ * Populate the exports object with constructors for every error class.
+ * @private
+ */
+
+function populateConstructorExports (exports, codes, HttpError) {
+  codes.forEach(function forEachCode (code) {
+    var CodeError
+    var name = toIdentifier(statuses.message[code])
+
+    switch (codeClass(code)) {
+      case 400:
+        CodeError = createClientErrorConstructor(HttpError, name, code)
+        break
+      case 500:
+        CodeError = createServerErrorConstructor(HttpError, name, code)
+        break
     }
-    return result;
-}
 
-function escapeHtml(value) {
-    return String(value ?? "").replace(/[&<>"']/g, character => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    })[character]);
-}
-
-function showEmpty(container, message) {
-    container.innerHTML = `<p class="empty-state">${escapeHtml(message)}</p>`;
-}
-
-function showLoadError(container, label) {
-    container.innerHTML = `<p class="empty-state error-message">${escapeHtml(label)} could not load. Please refresh or try again later.</p>`;
-}
-
-function openDialog(dialog) {
-    if (dialog && !dialog.open) dialog.showModal();
-}
-
-function setFeedback(form, message, isError = false) {
-    const feedback = form.querySelector(".form-feedback");
-    feedback.textContent = message;
-    feedback.dataset.error = String(isError);
-}
-
-async function loadProfessionals() {
-    try {
-        const { professionals } = await requestJson("/api/public/professionals");
-        if (!professionals.length) {
-            showEmpty(professionalList, "There are no public profiles yet. If you are a security professional, you can create the first one.");
-            return;
-        }
-        professionalList.innerHTML = professionals.map(person => {
-            const photo = person.hasPhoto
-                ? `<img class="profile-photo" src="/api/public/professionals/${encodeURIComponent(person.id)}/photo" alt="Profile photo of ${escapeHtml(person.displayName)}">`
-                : `<div class="profile-photo placeholder" aria-hidden="true">${escapeHtml(person.displayName.slice(0, 1))}</div>`;
-            const years = Number(person.experienceYears);
-            return `<article class="professional-card">
-                ${photo}
-                <div class="professional-content">
-                    <p class="profile-role">${escapeHtml(person.role)}</p>
-                    <h3>${escapeHtml(person.displayName)}</h3>
-                    <p class="profile-experience">${years} ${years === 1 ? "year" : "years"} of experience</p>
-                    <p class="profile-description">${escapeHtml(person.description)}</p>
-                    <button class="button card-hire" type="button" data-hire-id="${escapeHtml(person.id)}" data-hire-name="${escapeHtml(person.displayName)}">Request to hire</button>
-                </div>
-            </article>`;
-        }).join("");
-    } catch {
-        showLoadError(professionalList, "Professional profiles");
+    if (CodeError) {
+      // export the constructor
+      exports[code] = CodeError
+      exports[name] = CodeError
     }
+  })
 }
 
-async function loadJobs() {
-    try {
-        const { jobs } = await requestJson("/api/public/jobs");
-        if (!jobs.length) {
-            showEmpty(jobList, "There are no open positions right now. Check back soon, or create a professional profile to list your services.");
-            return;
-        }
-        jobList.innerHTML = jobs.map(job => {
-            const pay = job.payMinKes == null && job.payMaxKes == null
-                ? "Pay discussed with admin"
-                : job.payMinKes != null && job.payMaxKes != null
-                    ? `KSh ${Number(job.payMinKes).toLocaleString()}–${Number(job.payMaxKes).toLocaleString()}`
-                    : `From KSh ${Number(job.payMinKes ?? job.payMaxKes).toLocaleString()}`;
-            return `<article class="job-card">
-                <div>
-                    <p class="job-category">${escapeHtml(job.category)}</p>
-                    <h3>${escapeHtml(job.title)}</h3>
-                    <p class="job-meta"><span>${escapeHtml(job.county || "Location shared by admin")}</span><span>${escapeHtml(pay)}</span></p>
-                    <p class="job-description">${escapeHtml(job.description)}</p>
-                </div>
-                <button class="button job-apply" type="button" data-apply-id="${escapeHtml(job.id)}" data-apply-title="${escapeHtml(job.title)}">Apply now <span aria-hidden="true">→</span></button>
-            </article>`;
-        }).join("");
-    } catch {
-        showLoadError(jobList, "Job openings");
-    }
+/**
+ * Get a class name from a name identifier.
+ *
+ * @param {string} name
+ * @returns {string}
+ * @private
+ */
+
+function toClassName (name) {
+  return name.slice(-5) === 'Error' ? name : name + 'Error'
 }
-
-async function prepareCsrfToken() {
-    const result = await requestJson("/api/auth/csrf");
-    csrfToken = result.token;
-}
-
-async function sendForm(form, path, body, isMultipart = false) {
-    setFeedback(form, "Sending…");
-    try {
-        if (!csrfToken) await prepareCsrfToken();
-        await requestJson(path, {
-            method: "POST",
-            headers: { "X-CSRF-Token": csrfToken },
-            body: isMultipart ? body : JSON.stringify(body)
-        });
-        form.reset();
-        setFeedback(form, "Thank you. Your details have been sent privately to the My Security admin team.");
-        return true;
-    } catch (error) {
-        setFeedback(form, error.message, true);
-        return false;
-    }
-}
-
-professionalList.addEventListener("click", event => {
-    const button = event.target.closest("[data-hire-id]");
-    if (!button) return;
-    document.querySelector("#hire-professional-id").value = button.dataset.hireId;
-    document.querySelector("#selected-professional").textContent = `Requesting: ${button.dataset.hireName}`;
-    setFeedback(document.querySelector("#hire-form"), "");
-    openDialog(document.querySelector("#hire-dialog"));
-});
-
-jobList.addEventListener("click", event => {
-    const button = event.target.closest("[data-apply-id]");
-    if (!button) return;
-    document.querySelector("#application-job-id").value = button.dataset.applyId;
-    document.querySelector("#application-job-name").textContent = `Applying for: ${button.dataset.applyTitle}`;
-    setFeedback(document.querySelector("#application-form"), "");
-    openDialog(document.querySelector("#application-dialog"));
-});
-
-document.querySelectorAll("[data-open-dialog]").forEach(button => {
-    button.addEventListener("click", () => {
-        const dialog = document.getElementById(button.dataset.openDialog);
-        setFeedback(dialog.querySelector("form"), "");
-        openDialog(dialog);
-    });
-});
-
-document.querySelectorAll("[data-close-dialog]").forEach(button => {
-    button.addEventListener("click", () => button.closest("dialog").close());
-});
-
-dialogs.forEach(dialog => {
-    dialog.addEventListener("click", event => {
-        if (event.target === dialog) dialog.close();
-    });
-});
-
-document.querySelector("#hire-form").addEventListener("submit", event => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const data = Object.fromEntries(new FormData(form));
-    data.budgetKes = data.budgetKes ? Number(data.budgetKes) : null;
-    data.consent = form.elements.consent.checked;
-    void sendForm(form, "/api/public/hire-requests", data);
-});
-
-document.querySelector("#professional-form").addEventListener("submit", event => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const data = new FormData(form);
-    data.set("consent", form.elements.consent.checked ? "true" : "false");
-    void sendForm(form, "/api/public/professionals", data, true).then(success => {
-        if (success) void loadProfessionals();
-    });
-});
-
-document.querySelector("#application-form").addEventListener("submit", event => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const data = Object.fromEntries(new FormData(form));
-    data.consent = form.elements.consent.checked;
-    void sendForm(form, "/api/public/job-applications", data);
-});
-
-const menuToggle = document.querySelector(".menu-toggle");
-const mainNav = document.querySelector("#main-nav");
-menuToggle.addEventListener("click", () => {
-    const open = menuToggle.getAttribute("aria-expanded") !== "true";
-    menuToggle.setAttribute("aria-expanded", String(open));
-    mainNav.classList.toggle("open", open);
-});
-mainNav.addEventListener("click", event => {
-    if (event.target.closest("a")) {
-        mainNav.classList.remove("open");
-        menuToggle.setAttribute("aria-expanded", "false");
-    }
-});
-
-document.querySelector("#current-year").textContent = String(new Date().getFullYear());
-void loadProfessionals();
-void loadJobs();
