@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Find trusted security professionals or apply for security work with My Security.">
+    <meta name="theme-color" content="#111b2c">
+    <title>My Security | Security, handled responsibly</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="stylesheet" href="index.css">
+    <script src="index.js" defer></script>
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="#home" aria-label="My Security home">
+            <img src="logo.png" alt="" width="44" height="44">
+            <span>MY <strong>SECURITY</strong></span>
+        </a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">Menu</button>
+        <nav class="main-nav" id="main-nav" aria-label="Main navigation">
+            <a href="#professionals">Find security</a>
+            <a href="#openings">Job openings</a>
+            <a href="#how-it-works">How it works</a>
+            <a href="#contact-section">Contact Team</a>
+            <a class="nav-cta" href="#join">Join as a professional</a>
+        </nav>
+    </header>
+
+    <main id="home">
+        <section class="hero">
+            <div class="hero-inner">
+                <div class="hero-copy">
+                    <p class="eyebrow"><span class="eyebrow-dot"></span> SECURITY, HANDLED RESPONSIBLY</p>
+                    <h1>The right people.<br><span>Safer moments.</span></h1>
+                    <p class="hero-description">Connect with security professionals for events, work and personal protection. Every request is coordinated privately by our team.</p>
+                    <div class="hero-actions">
+                        <a class="button button-primary" href="#professionals">Find a professional <span aria-hidden="true">→</span></a>
+                        <a class="button button-quiet" href="#join">I’m looking for work</a>
+                    </div>
+                    <div class="hero-note"><span aria-hidden="true">✓</span> No public addresses or direct contact details</div>
+                </div>
+                <div class="hero-card" aria-label="A safer way to connect">
+                    <div class="hero-card-top"><span class="status-dot"></span> A more thoughtful way to hire</div>
+                    <div class="hero-orbit">
+                        <div class="orbit orbit-one"></div>
+                        <div class="orbit orbit-two"></div>
+                        <div class="shield-mark" aria-hidden="true">M</div>
+                        <span class="orbit-label label-top">Private requests</span>
+                        <span class="orbit-label label-bottom">Human support</span>
+                    </div>
+                    <div class="hero-card-foot">
+                        <span>People first. Safety always.</span>
+                        <span class="card-arrow" aria-hidden="true">↗</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-bottom">
+                <span>BOUNCERS</span><span>BODYGUARDS</span><span>SECURITY STAFF</span><span>PERSONAL PROTECTION</span>
+            </div>
+        </section>
+
+        <section class="trust-strip" aria-label="Service commitments">
+            <div><span class="trust-icon">01</span><p><strong>Private by design</strong><br>Your contact details are shared with admins, not displayed publicly.</p></div>
+            <div><span class="trust-icon">02</span><p><strong>Human coordination</strong><br>Our team helps connect both sides and arrange next steps.</p></div>
+            <div><span class="trust-icon">03</span><p><strong>Meet before you agree</strong><br>Discuss the details and sign any agreement in person.</p></div>
+        </section>
+
+        <section class="section section-listings" id="professionals">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow eyebrow-dark">MEET THE PROFESSIONALS</p>
+                    <h2>Security for what<br>matters to you.</h2>
+                </div>
+                <p class="section-intro">Explore public profiles. When you send a request, our admin team follows up privately to help coordinate the details.</p>
+            </div>
+            <div class="listing-grid" id="professional-list" aria-live="polite">
+                <p class="loading-message">Loading available professionals…</p>
+            </div>
+        </section>
+
+        <section class="process-section" id="how-it-works">
+            <div class="process-inner">
+                <div class="process-heading">
+                    <p class="eyebrow">SIMPLE. PRIVATE. PERSONAL.</p>
+                    <h2>Good security starts<br>with a good conversation.</h2>
+                    <p>We keep the first step clear and let people coordinate the important details together.</p>
+                </div>
+                <ol class="process-steps">
+                    <li><span>01</span><div><h3>Send a request</h3><p>Tell us what support you need and how to reach you. Please don’t submit an ID number or address online.</p></div></li>
+                    <li><span>02</span><div><h3>Our team follows up</h3><p>An admin contacts both parties and helps arrange a conversation or physical meeting.</p></div></li>
+                    <li><span>03</span><div><h3>Agree in person</h3><p>Discuss the work, confirm identity face to face and record any agreement on paper.</p></div></li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="section section-jobs" id="openings">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow eyebrow-dark">TAKE THE NEXT STEP</p>
+                    <h2>Work that makes<br>a difference.</h2>
+                </div>
+                <p class="section-intro">Browse current opportunities from our team. Don’t see a fit? Create a professional profile and let people discover your services.</p>
+            </div>
+            <div class="job-list" id="job-list" aria-live="polite">
+                <p class="loading-message">Loading current openings…</p>
+            </div>
+        </section>
+
+        <section class="join-section" id="join">
+            <div>
+                <p class="eyebrow">FOR SECURITY PROFESSIONALS</p>
+                <h2>Put your experience<br>in the right hands.</h2>
+                <p>Create a public profile with your display name, role, experience and a short introduction. Your contact details stay private for admin coordination.</p>
+            </div>
+            <button class="button button-primary" type="button" data-open-dialog="professional-dialog">Create a profile <span aria-hidden="true">→</span></button>
+        </section>
+
+        <section class="contact-section" id="contact-section">
+            <div class="contacts">
+                <div class="section-heading">CONTACTS</div>
+                <p>
+                    <em> Reach Us through:-</em>
+                </p>
+                <ol class="list-contacts">
+                    <li>Phone Number: <span class="list">0705368528</span>.</li>
+                    <li>Email Address: <span class="list"><a href="mailto:jamjack81@gmail.com">mysecurity@gmail.com</a></span></li>
+                    <li>WhatsApp Number: <span class="list"><a href="#">0705368528</a></span></li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <a class="brand footer-brand" href="#home"><img src="logo.png" alt="" width="36" height="36"><span>MY <strong>SECURITY</strong></span></a>
+        <p>Security, handled responsibly.</p>
+        <a href="admin.html">Admin sign in</a>
+        <span class="copyright">© <span id="current-year"></span> My Security</span>
+    </footer>
+
+    <dialog class="form-dialog" id="hire-dialog" aria-labelledby="hire-title">
+        <form class="dialog-shell" id="hire-form">
+            <button class="dialog-close" type="button" aria-label="Close form" data-close-dialog>×</button>
+            <p class="eyebrow eyebrow-dark">PRIVATE HIRE REQUEST</p>
+            <h2 id="hire-title">Tell us what you need.</h2>
+            <p class="form-intro">Your request goes to our admin team, not directly to the professional. We’ll contact you to coordinate next steps.</p>
+            <input type="hidden" name="professionalId" id="hire-professional-id">
+            <p class="selected-professional" id="selected-professional"></p>
+            <label>Your name<input name="customerName" autocomplete="name" required maxlength="120"></label>
+            <div class="field-row">
+                <label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+                <label>Phone<input name="phone" type="tel" autocomplete="tel" required maxlength="40"></label>
+            </div>
+            <label>What do you need security for?<textarea name="reason" rows="3" required maxlength="1500"></textarea></label>
+            <label>Proposed amount (KSh, optional)<input name="budgetKes" type="number" min="0" max="5000000" step="1"></label>
+            <label class="consent-label"><input name="consent" type="checkbox" required><span>I agree that My Security admins may use these details to follow up on this request. I will not submit an ID number or address here.</span></label>
+            <p class="form-feedback" role="status" aria-live="polite"></p>
+            <button class="button button-primary button-full" type="submit">Send private request</button>
+        </form>
+    </dialog>
+
+    <dialog class="form-dialog" id="professional-dialog" aria-labelledby="professional-title">
+        <form class="dialog-shell" id="professional-form" enctype="multipart/form-data">
+            <button class="dialog-close" type="button" aria-label="Close form" data-close-dialog>×</button>
+            <p class="eyebrow eyebrow-dark">JOIN THE MARKETPLACE</p>
+            <h2 id="professional-title">Create your profile.</h2>
+            <p class="form-intro">Your listing appears publicly after submission. Admins can hide it if it needs review. Contact details remain private.</p>
+            <label>Public display name<input name="displayName" required maxlength="80"></label>
+            <label>Full name for admin records<input name="fullName" autocomplete="name" required maxlength="120"></label>
+            <div class="field-row">
+                <label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+                <label>Phone<input name="phone" type="tel" autocomplete="tel" required maxlength="40"></label>
+            </div>
+            <div class="field-row">
+                <label>Professional role
+                    <select name="role" required>
+                        <option value="">Choose a role</option>
+                        <option value="Bouncer">Bouncer</option>
+                        <option value="Bodyguard">Bodyguard</option>
+                        <option value="Security guard">Security guard</option>
+                        <option value="Watchman">Watchman</option>
+                        <option value="Personal security">Personal security</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </label>
+                <label>Years of experience<input name="experienceYears" type="number" min="0" max="60" step="1" required></label>
+            </div>
+            <label>Short public introduction<textarea name="description" rows="4" required maxlength="1200"></textarea></label>
+            <label>Profile photo (JPG, PNG or WebP; up to 3 MB)<input name="photo" type="file" accept="image/jpeg,image/png,image/webp"></label>
+            <label class="consent-label"><input name="consent" type="checkbox" required><span>I confirm these details are accurate and agree that My Security admins may contact me about my profile. I will show identity documents in person, not upload them here.</span></label>
+            <p class="form-feedback" role="status" aria-live="polite"></p>
+            <button class="button button-primary button-full" type="submit">Publish my profile</button>
+        </form>
+    </dialog>
+
+    <dialog class="form-dialog" id="application-dialog" aria-labelledby="application-title">
+        <form class="dialog-shell" id="application-form">
+            <button class="dialog-close" type="button" aria-label="Close form" data-close-dialog>×</button>
+            <p class="eyebrow eyebrow-dark">JOB APPLICATION</p>
+            <h2 id="application-title">Apply for this role.</h2>
+            <p class="form-intro" id="application-job-name"></p>
+            <input type="hidden" name="jobId" id="application-job-id">
+            <label>Your name<input name="applicantName" autocomplete="name" required maxlength="120"></label>
+            <div class="field-row">
+                <label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"></label>
+                <label>Phone<input name="phone" type="tel" autocomplete="tel" required maxlength="40"></label>
+            </div>
+            <label>Relevant experience<textarea name="experience" rows="3" maxlength="1200"></textarea></label>
+            <label class="consent-label"><input name="consent" type="checkbox" required><span>I agree that My Security admins may use these details to follow up on my application. I will not submit an ID number or address here.</span></label>
+            <p class="form-feedback" role="status" aria-live="polite"></p>
+            <button class="button button-primary button-full" type="submit">Send application</button>
+        </form>
+    </dialog>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Private My Security administration dashboard.">
+    <meta name="theme-color" content="#111b2c">
+    <title>Admin | My Security</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="stylesheet" href="admin.css">
+    <script src="admin.js" defer></script>
+</head>
+<body>
+    <header class="admin-header">
+        <a class="brand" href="/">
+            <img src="logo.png" alt="" width="39" height="39">
+            <span>MY <strong>SECURITY</strong><small>ADMINISTRATION</small></span>
+        </a>
+        <a class="back-link" href="/">← Public website</a>
+    </header>
+
+    <main class="admin-main">
+        <section class="login-panel" id="login-panel" aria-labelledby="login-title">
+            <p class="eyebrow">RESTRICTED ACCESS</p>
+            <h1 id="login-title">Admin sign in</h1>
+            <p>Sign in to review private requests, applicants and public listings.</p>
+            <form id="login-form">
+                <label>Email<input name="email" type="email" autocomplete="username" required maxlength="254"></label>
+                <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+                <p class="feedback" id="login-feedback" role="status" aria-live="polite"></p>
+                <button class="button button-primary" type="submit">Sign in securely</button>
+            </form>
+            <p class="privacy-reminder">Never ask applicants to send identity documents through this page. Verify identity in person.</p>
+        </section>
+
+        <section class="dashboard" id="dashboard" hidden>
+            <div class="dashboard-heading">
+                <div><p class="eyebrow">MY SECURITY / ADMIN</p><h1>Operations dashboard</h1></div>
+                <button class="button button-secondary" type="button" id="logout-button">Sign out</button>
+            </div>
+            <p class="dashboard-message" id="dashboard-message" role="status" aria-live="polite"></p>
+            <div class="summary-grid" id="summary-grid"></div>
+            <nav class="admin-tabs" aria-label="Dashboard sections">
+                <button type="button" class="active" data-panel="requests-panel">Hire requests</button>
+                <button type="button" data-panel="professionals-panel">Professionals</button>
+                <button type="button" data-panel="jobs-panel">Job openings</button>
+                <button type="button" data-panel="applications-panel">Job applications</button>
+            </nav>
+
+            <section class="dashboard-panel active" id="requests-panel">
+                <div class="panel-heading"><div><h2>Hire requests</h2><p>Private customer details are visible only to signed-in admins.</p></div></div>
+                <div class="record-list" id="requests-list"><p class="loading">Loading requests…</p></div>
+            </section>
+
+            <section class="dashboard-panel" id="professionals-panel">
+                <div class="panel-heading"><div><h2>Professional profiles</h2><p>Review new profiles before publishing them. Only published profiles appear on the public website.</p></div></div>
+                <div class="record-list" id="professionals-list"><p class="loading">Loading profiles…</p></div>
+            </section>
+
+            <section class="dashboard-panel" id="jobs-panel">
+                <div class="panel-heading"><div><h2>Job openings</h2><p>Create vacancies and close them when filled.</p></div></div>
+                <form class="job-form" id="job-form">
+                    <h3>Post a new opening</h3>
+                    <div class="form-grid">
+                        <label>Job title<input name="title" required maxlength="120"></label>
+                        <label>Role category<input name="category" required maxlength="80"></label>
+                        <label>County / general area (no street address)<input name="county" maxlength="80"></label>
+                        <label>Minimum monthly pay, KSh<input name="payMinKes" type="number" min="0" max="5000000" step="1"></label>
+                        <label>Maximum monthly pay, KSh<input name="payMaxKes" type="number" min="0" max="5000000" step="1"></label>
+                        <label>Application deadline<input name="deadline" type="date"></label>
+                    </div>
+                    <label>Role description<textarea name="description" rows="4" required maxlength="2500"></textarea></label>
+                    <button class="button button-primary" type="submit">Publish opening</button>
+                </form>
+                <div class="record-list" id="jobs-list"><p class="loading">Loading openings…</p></div>
+            </section>
+
+            <section class="dashboard-panel" id="applications-panel">
+                <div class="panel-heading"><div><h2>Job applications</h2><p>Follow up with applicants and record progress here.</p></div></div>
+                <div class="record-list" id="applications-list"><p class="loading">Loading applications…</p></div>
+            </section>
+        </section>
+    </main>
+</body>
+</html>
